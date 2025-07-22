@@ -27,7 +27,6 @@ struct pixart_data {
     int                          async_init_step;
 
     bool                         ready; // whether init is finished successfully
-    bool                         last_read_burst;
     int                          err; // error code during async init
     int                          retries; // number of retries of the initialization sequence
 };
@@ -40,6 +39,8 @@ struct pixart_config {
     uint8_t evt_type;
     uint8_t x_input_code;
     uint8_t y_input_code;
+    bool force_awake;
+    bool force_awake_4ms_mode;
 };
 
 #ifdef __cplusplus

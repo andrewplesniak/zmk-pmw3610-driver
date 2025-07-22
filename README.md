@@ -1,6 +1,8 @@
-PMW3610 driver implementation for ZMK
+# PMW3610 driver implementation for ZMK
 
 This work is based on [ufan's zmk pixart sensor drivers](https://github.com/ufan/zmk/tree/support-trackpad), [inorichi's zmk-pmw3610-driver](https://github.com/inorichi/zmk-pmw3610-driver), and [Zephyr PMW3610 driver](https://github.com/zephyrproject-rtos/zephyr/blob/main/drivers/input/input_pmw3610.c).
+
+This driver had been tested on [my PMW3610 breakout board](https://github.com/badjeff/pmw3610-pcb).
 
 #### What is different to [inorichi's driver](https://github.com/inorichi/zmk-pmw3610-driver)
 - Compatible to be used on split peripheral shield.
@@ -58,6 +60,8 @@ Update `board.overlay` adding the necessary bits (update the pins for your board
     };
 };
 
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
 &spi0 {
     status = "okay";
     compatible = "nordic,nrf-spim";
@@ -76,6 +80,16 @@ Update `board.overlay` adding the necessary bits (update the pins for your board
         evt-type = <INPUT_EV_REL>;
         x-input-code = <INPUT_REL_X>;
         y-input-code = <INPUT_REL_Y>;
+
+        force-awake;
+        /* keep the sensor awake while ZMK activity state is ACTIVE,
+           fallback to normal downshift mode after ZMK goes into IDLE / SLEEP mode.
+           thus, the sensor would be a `wakeup-source` */
+
+        force-awake-4ms-mode;
+        /* while force-awake is acitvated, enable this mode to force sampling per 
+           4ms, where the default sampling rate is 8ms. */
+        /* NOTE: apply this mode if you need 250Hz with direct USB connection. */
     };
 };
 
